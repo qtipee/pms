@@ -34,6 +34,6 @@ At last, apply the migrations and run the server :
 
 ```
 cd pms
-python /manage.py migrate
-python /manage.py runserver
+python manage.py migrate
+python manage.py runserver
 ```
