@@ -1,0 +1,48 @@
+
+/* DRAG & DROP FILE INPUT */
+.file-field {
+    color: #333;
+    height: 12em;
+    border: 0.2rem dashed #ccc;
+    border-radius: 1.2rem;
+    box-sizing: border-box;
+    padding: 0;
+    transition: all 0.3s;
+}
+.file-field:hover,
+.file-field.dragenter {
+    color: #999;
+    box-shadow: 0.2rem 0.2rem 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
+}
+.file-field i {
+    font-size: 4.5rem;
+    margin: 1rem 0 1.3rem 0;
+}
+.file-field p {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem 0;
+}
+.file-field p.italic {
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.dragdrop-uploaded {
+    position: relative;
+}
+.dragdrop-uploaded .close {
+    color: #333;
+    font-size: 2.5rem;
+    opacity: 1;
+    margin: 0;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    transition: all 0.3s;
+}
+.dragdrop-uploaded .close:hover {
+    color: #dd0000;
+    cursor: pointer;
+    transform: scale(1.4);
+}

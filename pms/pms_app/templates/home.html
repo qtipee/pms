@@ -1,0 +1,34 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="center">
+            <form action="upload" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-large waves-effect waves-light" type="submit">UPLOAD</button>
+            </form>
+            <!--form id="form-upload-image" method="POST" action="upload">
+                {% csrf_token %}
+                <div class="file-field input-field">
+                    <input class="dand-file-input" name="file" type="file" accept="image/x-png,image/jpeg" required>
+                    <div class="file-path-wrapper">
+                        <div class="dragdrop-figure">
+                            <i class="material-icons">cloud_upload</i>
+                            <p>Drop your image here !</p>
+                            <p class="italic">Max 50 MB</p>
+                            <input class="file-path validate" type="text" hidden>
+                        </div>
+                        <div class="dragdrop-uploaded" hidden>
+                            <i class="material-icons close">close</i>
+                            <i class="material-icons">image</i>
+                            <p class="uploaded-file-name italic"></p>
+                            <p class="uploaded-file-size italic"></p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-large waves-effect waves-light" type="submit">UPLOAD</button>
+            </form-->
+        </div>
+    </div>
+{% endblock content %}
