@@ -7,6 +7,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 import os
 from django.conf import settings
 from .forms import *
+from .models import Image
 
 # Create your views here.
 
@@ -24,7 +25,10 @@ class Upload(APIView):
         form = ImageForm(request.POST, request.FILES) 
 
         if form.is_valid():
-            form.save()
+            image = form.save()
+            image.processed_image = image.all()
+            image.save()
+
             return HttpResponse('Success !')
 
         return HttpResponseNotFound('Error...')
