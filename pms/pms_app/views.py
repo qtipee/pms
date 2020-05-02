@@ -3,21 +3,18 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-
-import os
 from django.conf import settings
+
 from .forms import *
 
 # Create your views here.
 
-class Home(APIView):
+class Upload(APIView):
 
+    @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         form = ImageForm()
-        return render(request, 'home.html', {'form' : form})
-        
-
-class Upload(APIView): 
+        return render(request, 'upload.html', {'form' : form})
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
