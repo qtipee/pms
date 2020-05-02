@@ -13,24 +13,25 @@ DIST_TRANSFORM = 41.3969 * 0.5
 class Image(models.Model):
 
     def base_image_directory(instance, filename):
-        # File will be uploaded to MEDIA_ROOT/samples/<username>/<sample_name>
-        name, ext = os.path.splitext(filename)
-        return 'images/{0}-base{1}'.format(name, ext)
+        # File will be uploaded to MEDIA_ROOT/images/<date>/<time>-base.<ext>
+        ext = os.path.splitext(filename)[1]
+        return 'images/{0}/{1}_base{2}'.format(instance.datetime.date(), instance.datetime.time(), ext)
 
     def processed_image_directory(instance, filename):
-        # File will be uploaded to MEDIA_ROOT/samples/<username>/<sample_name>
-        name, ext = os.path.splitext(filename)
-        return 'images/{0}-processed{1}'.format(name, ext)
+        # File will be uploaded to MEDIA_ROOT/images/<date>/<time>-processed.<ext>
+        ext = os.path.splitext(filename)[1]
+        return 'images/{0}/{1}_processed{2}'.format(instance.datetime.date(), instance.datetime.time(), ext)
 
     base_image = models.ImageField(
         max_length=255, upload_to=base_image_directory)
     processed_image = models.ImageField(
         max_length=255, upload_to=processed_image_directory, blank=True)
-    datetime = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField(blank=True)
 
     def pretreatement(self):
         url = os.path.join(settings.MEDIA_ROOT, self.base_image.url)
-        pil_image = PIL.Image.open('C:\\DEV\\3 annee\\TraitementDImage\\PMS-Backend\\pms\\pms\\media\\images\\1.1-base_g9WtIc0.JPG') # TODO
+        pil_image = PIL.Image.open(
+            'C:\\DEV\\3 annee\\TraitementDImage\\PMS-Backend\\pms\\pms\\media\\images\\1.1-base_g9WtIc0.JPG')  # TODO
         img = np.array(pil_image)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
