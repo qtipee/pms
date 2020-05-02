@@ -4,7 +4,9 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
+from django.utils import timezone
 
+from .models import *
 from .forms import *
 
 # Create your views here.
@@ -18,10 +20,15 @@ class Upload(APIView):
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
-        form = ImageForm(request.POST, request.FILES) 
+        form = ImageForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save()
-            return HttpResponse('Success !')
+            new_image = Image(
+                base_image=form.cleaned_data['base_image'],
+                datetime=timezone.now()
+            )
+            new_image.save()
 
-        return HttpResponseNotFound('Error...')
+            return JsonResponse({ 'message': 'success' })
+
+        return JsonResponse({ 'message': 'error' })
