@@ -89,5 +89,5 @@ class Image(models.Model):
 
         img = PIL.Image.fromarray(img)
         f = BytesIO()
-        img.save(f, "JPEG")
-        self.processed_image.save("test.JPG", ImageFile(f))
+        img.save(f, 'JPEG')
+        self.processed_image.save('test.JPG', ImageFile(f))
