@@ -3,7 +3,10 @@ import os
 import cv2
 import numpy as np
 from django.conf import settings
-import PIL
+import PIL.Image
+from django.core.files import File
+from django.core.files.images import ImageFile
+from io import BytesIO
 
 # Create your models here.
 kernel = np.ones((3, 3), np.uint8)
@@ -29,9 +32,7 @@ class Image(models.Model):
     datetime = models.DateTimeField(blank=True)
 
     def pretreatement(self):
-        url = os.path.join(settings.MEDIA_ROOT, self.base_image.url)
-        pil_image = PIL.Image.open(
-            'C:\\DEV\\3 annee\\TraitementDImage\\PMS-Backend\\pms\\pms\\media\\images\\1.1-base_g9WtIc0.JPG')  # TODO
+        pil_image = PIL.Image.open(self.base_image)
         img = np.array(pil_image)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -59,8 +60,6 @@ class Image(models.Model):
         ret, sure_fg = cv2.threshold(
             dist_transform, DIST_TRANSFORM, 255, 0)
 
-        print(dist_transform.max())
-
         # Finding unknown region
         sure_fg = np.uint8(sure_fg)
         unknown = cv2.subtract(sure_bg, sure_fg)
@@ -82,10 +81,13 @@ class Image(models.Model):
 
         return img, ret
 
-    def all(self):
+    def treatment(self):
         img, thresh = self.pretreatement()
         thresh = self.fill_hole(thresh)
         sure_fg, unknown = self.work(thresh)
         img, ret = self.draw_circle(sure_fg, unknown, img)
 
-        return img
+        img = PIL.Image.fromarray(img)
+        f = BytesIO()
+        img.save(f, "JPEG")
+        self.processed_image.save("test.JPG", ImageFile(f))

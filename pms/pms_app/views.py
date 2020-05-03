@@ -5,19 +5,21 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 from django.utils import timezone
+from django.core.files.images import ImageFile
 
-from .models import *
 from .forms import *
 from .models import Image
+from django.core.files import File
 
 # Create your views here.
+
 
 class Upload(APIView):
 
     @method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         form = ImageForm()
-        return render(request, 'upload.html', {'form' : form})
+        return render(request, 'upload.html', {'form': form})
 
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
@@ -28,9 +30,10 @@ class Upload(APIView):
                 base_image=form.cleaned_data['base_image'],
                 datetime=timezone.now()
             )
-            new_image.processed_image = new_image.all()
+            new_image.save()
+            new_image.treatment()
             new_image.save()
 
-            return JsonResponse({ 'message': 'success' })
+            return JsonResponse({'message': 'success'})
 
-        return JsonResponse({ 'message': 'error' })
+        return JsonResponse({'message': 'error'})
