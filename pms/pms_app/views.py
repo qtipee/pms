@@ -27,7 +27,7 @@ class Upload(APIView):
         form = ImageForm(request.POST, request.FILES)
 
         if form.is_valid():
-            new_image = Image(
+            new_image = ImageModel(
                 base_image=form.cleaned_data['base_image'],
                 datetime=timezone.now()
             )
@@ -35,9 +35,9 @@ class Upload(APIView):
             new_image.treatment()
             new_image.save()
 
-            return JsonResponse({'message': 'success'})
+            return JsonResponse({'message': 'Image successfully uploaded !'}, status=200)
 
-        return JsonResponse({'message': 'error'})
+        return JsonResponse({'message': 'An error occured...'}, status=400)
 
 class Images(generics.ListAPIView):
     serializer_class = ImageSerializer
@@ -54,5 +54,5 @@ class Images(generics.ListAPIView):
 
 class Image(generics.RetrieveAPIView):
     lookup_field = 'id'
-    queryset = Image.objects.all()
+    queryset = ImageModel.objects.all()
     serializer_class = ImageSerializer
