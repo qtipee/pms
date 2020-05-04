@@ -86,6 +86,8 @@ class Image(models.Model):
         sure_fg, unknown = self.work(thresh)
         img, ret = self.draw_circle(sure_fg, unknown, img)
 
+        self.count = ret
+
         img = PIL.Image.fromarray(img)
         f = BytesIO()
         img.save(f, 'JPEG')

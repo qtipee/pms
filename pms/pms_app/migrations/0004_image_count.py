@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='count',
-            field=models.PositiveIntegerField(blank=True, default=0),
+            field=models.PositiveIntegerField(blank=True, null=True, default=0),
             preserve_default=False,
         ),
     ]
