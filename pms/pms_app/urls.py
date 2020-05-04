@@ -7,4 +7,5 @@ urlpatterns = [
     path('api/images', Images.as_view()),
     path('api/image/<int:id>', Image.as_view()),
     path('api/image_file/<int:image_id>/<str:image>', ImageFile.as_view()),
+    path('api/update/<int:image_id>/<int:count>', ImageCountUpdate.as_view()),
 ]
