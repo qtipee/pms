@@ -25,11 +25,10 @@ class Image(models.Model):
         ext = os.path.splitext(filename)[1]
         return 'images/{0}/{1}_processed{2}'.format(instance.datetime.date(), instance.datetime.time(), ext)
 
-    base_image = models.ImageField(
-        max_length=255, upload_to=base_image_directory)
-    processed_image = models.ImageField(
-        max_length=255, upload_to=processed_image_directory, blank=True)
+    base_image = models.ImageField(max_length=255, upload_to=base_image_directory)
+    processed_image = models.ImageField(max_length=255, upload_to=processed_image_directory, blank=True)
     datetime = models.DateTimeField(blank=True)
+    count = models.PositiveIntegerField(blank=True)
 
     def pretreatement(self):
         pil_image = PIL.Image.open(self.base_image)
