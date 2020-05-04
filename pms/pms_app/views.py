@@ -1,3 +1,4 @@
+import mimetypes
 from rest_framework import filters, generics
 from rest_framework.views import APIView
 from django.shortcuts import render
@@ -56,3 +57,22 @@ class Image(generics.RetrieveAPIView):
     lookup_field = 'id'
     queryset = ImageModel.objects.all()
     serializer_class = ImageSerializer
+
+class ImageFile(APIView):
+    def get(self, request, image_id, image):
+        # Image model contains two images : base_image and processed_image
+        if image == 'base' or image == 'processed':
+            image += '_image'
+            file = ImageModel.objects.filter(id=image_id).values(image).get()
+
+            if file:
+                path_to_file = os.path.join(settings.MEDIA_ROOT, file[image])
+                with open(path_to_file, 'rb') as image_file:
+                    mime_type = mimetypes.MimeTypes().guess_type(file[image][0])
+                    response = HttpResponse(image_file, content_type=mime_type)
+                    filename = file[image].split('/')[-1]
+                    response['Content-Disposition'] = f'attachement; filename="{filename}"'
+
+                return response
+
+        return HttpResponseNotFound('No matching file found.')
