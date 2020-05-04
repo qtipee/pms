@@ -76,3 +76,15 @@ class ImageFile(APIView):
                 return response
 
         return HttpResponseNotFound('No matching file found.')
+
+class ImageCountUpdate(APIView):
+    def get(self, request, image_id, count):
+        image = ImageModel.objects.filter(id=image_id).get()
+
+        if image:
+            image.count = count
+            image.save()
+
+            return JsonResponse({'message': 'Image count successfully updated !'}, status=200)
+
+        return HttpResponseNotFound('No matching image found.')
