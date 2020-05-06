@@ -43,7 +43,7 @@ jobs:
         # MYSQL_ROOT_PASSWORD - root superuser password
         mysql root password: root # optional, default is
         # MYSQL_DATABASE - name for the default database that is created
-        mysql database: safm # optional, default is
+        mysql database: pms # optional, default is
         # MYSQL_USER - create the specified user with superuser power for created database
         mysql user: root # optional, default is
         # MYSQL_PASSWORD - specified superuser password which user is power for created database
@@ -56,6 +56,8 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       run: |
         cd pms
         python manage.py migrate
@@ -63,6 +65,8 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       run: |
         cd pms
         python manage.py test
