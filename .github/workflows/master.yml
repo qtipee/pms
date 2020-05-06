@@ -57,7 +57,6 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
         PASSWORD: ${{ secrets.PASSWORD }}
-        MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       run: |
         cd pms
         python manage.py migrate
@@ -66,7 +65,6 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
         PASSWORD: ${{ secrets.PASSWORD }}
-        MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       run: |
         cd pms
         python manage.py test
