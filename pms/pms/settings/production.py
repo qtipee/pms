@@ -8,7 +8,7 @@ DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('GROUPNAME', 'safm'),
+        'NAME': os.environ.get('GROUPNAME', 'pms'),
         'USER': os.environ.get('GROUPNAME', 'root'),
         'PASSWORD': os.environ.get('PASSWORD', ''),
         'HOST': os.environ.get('MYSQL_HOST', '127.0.0.1'),
