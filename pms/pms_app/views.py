@@ -3,8 +3,8 @@ from rest_framework import filters, generics
 from rest_framework.views import APIView
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie
+#from django.utils.decorators import method_decorator
+#from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.images import ImageFile
@@ -18,18 +18,16 @@ from .serializers import *
 
 class Upload(APIView):
 
-    @method_decorator(ensure_csrf_cookie)
+    #@method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
         form = ImageForm()
         return render(request, 'upload.html', {'form': form})
 
-    @method_decorator(ensure_csrf_cookie)
+    #@method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
-        form = ImageForm(request.POST, request.FILES)
-
-        if form.is_valid():
+        if request.data['base_image']:
             new_image = ImageModel(
-                base_image=form.cleaned_data['base_image'],
+                base_image=request.data['base_image'],
                 datetime=timezone.now()
             )
             new_image.save()
