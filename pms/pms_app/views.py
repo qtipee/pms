@@ -1,3 +1,4 @@
+import os
 import mimetypes
 from rest_framework import filters, generics
 from rest_framework.views import APIView
@@ -25,18 +26,32 @@ class Upload(APIView):
 
     #@method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
-        if request.data['base_image']:
+        try:
+            image_file = request.FILES['base_image']
+            filename = image_file.name
+            path = os.path.join(settings.MEDIA_ROOT, 'images', filename)
+            with open(path, 'wb') as img:
+                for b in image_file:
+                    img.write(b)
+
+            return JsonResponse({'message': 'Image successfully uploaded !', 'filename': filename}, status=200)
+        except Exception as error:
+            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)  
+
+class Process(APIView):
+    def get(self, request, filename):
+        try:
+            path = os.path.join(settings.MEDIA_ROOT, 'images', filename)
             new_image = ImageModel(
-                base_image=request.data['base_image'],
+                base_image=File(open(path, 'rb')),
                 datetime=timezone.now()
             )
-            new_image.save()
             new_image.treatment()
             new_image.save()
 
-            return JsonResponse({'message': 'Image successfully uploaded !'}, status=200)
-
-        return JsonResponse({'message': 'An error occured...'}, status=400)
+            return JsonResponse({'message': 'Image successfully processed !'}, status=200)
+        except Exception as error:
+            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)            
 
 class Images(generics.ListAPIView):
     serializer_class = ImageSerializer
