@@ -4,8 +4,6 @@ from rest_framework import filters, generics
 from rest_framework.views import APIView
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
-#from django.utils.decorators import method_decorator
-#from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.images import ImageFile
@@ -19,18 +17,23 @@ from .serializers import *
 
 class Upload(APIView):
 
-    #@method_decorator(ensure_csrf_cookie)
     def get(self, request, *args, **kwargs):
+        '''
+        Upload image form (for web browser access)
+        '''
         form = ImageForm()
         return render(request, 'upload.html', {'form': form})
 
-    #@method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
+        '''
+        Upload an image file
+        '''
         try:
             image_file = request.FILES['base_image']
             filename = image_file.name
             path = os.path.join(settings.MEDIA_ROOT, 'images', filename)
             with open(path, 'wb') as img:
+                # Writes the uploaded image in MEDIA_ROOT/images
                 for b in image_file:
                     img.write(b)
 
@@ -38,22 +41,32 @@ class Upload(APIView):
         except Exception as error:
             return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)  
 
+
 class Process(APIView):
     def get(self, request, filename):
+        '''
+        Processes the image associated to the given filename
+        '''
         try:
             path = os.path.join(settings.MEDIA_ROOT, 'images', filename)
             new_image = ImageModel(
                 base_image=File(open(path, 'rb')),
                 datetime=timezone.now()
             )
-            new_image.treatment()
-            new_image.save()
+            new_image.treatment() # Image processing
+            new_image.save() # Saves the model in the database
+
+            os.remove(path) # Removes the temporary uploaded image file
 
             return JsonResponse({'message': 'Image successfully processed !'}, status=200)
         except Exception as error:
             return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)            
 
+
 class Images(generics.ListAPIView):
+    '''
+    To get multiple images models
+    '''
     serializer_class = ImageSerializer
     query_limit = 10
 
@@ -66,12 +79,20 @@ class Images(generics.ListAPIView):
             queryset = ImageModel.objects.filter(id__lt=from_id).order_by('-id')[:self.query_limit]
         return queryset
 
+
 class Image(generics.RetrieveAPIView):
+    '''
+    To get a single image model (by id)
+    '''
     lookup_field = 'id'
     queryset = ImageModel.objects.all()
     serializer_class = ImageSerializer
 
+
 class ImageFile(APIView):
+    '''
+    To get an image file
+    '''
     def get(self, request, image_id, image):
         # Image model contains two images : base_image and processed_image
         if image == 'base' or image == 'processed':
@@ -81,6 +102,7 @@ class ImageFile(APIView):
             if file:
                 path_to_file = os.path.join(settings.MEDIA_ROOT, file[image])
                 with open(path_to_file, 'rb') as image_file:
+                    # Prepares the image file for HTTP request
                     mime_type = mimetypes.MimeTypes().guess_type(file[image][0])
                     response = HttpResponse(image_file, content_type=mime_type)
                     filename = file[image].split('/')[-1]
@@ -90,14 +112,18 @@ class ImageFile(APIView):
 
         return HttpResponseNotFound('No matching file found.')
 
-class ImageCountUpdate(APIView):
-    def get(self, request, image_id, count):
-        image = ImageModel.objects.filter(id=image_id).get()
 
-        if image:
+class ImageCountUpdate(APIView):
+
+    def get(self, request, image_id, count):
+        '''
+        Updates the count property of the image model associated to the given id
+        '''
+        try:
+            image = ImageModel.objects.filter(id=image_id).get()
             image.count = count
             image.save()
 
             return JsonResponse({'message': 'Image count successfully updated !'}, status=200)
-
-        return HttpResponseNotFound('No matching image found.')
+        except Exception as error:
+            return JsonResponse({'error': str(error)}, status=400)  
