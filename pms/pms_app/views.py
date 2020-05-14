@@ -15,6 +15,7 @@ from .serializers import *
 
 # Create your views here.
 
+
 class Upload(APIView):
 
     def get(self, request, *args, **kwargs):
@@ -39,7 +40,7 @@ class Upload(APIView):
 
             return JsonResponse({'message': 'Image successfully uploaded !', 'filename': filename}, status=200)
         except Exception as error:
-            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)  
+            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)
 
 
 class Process(APIView):
@@ -53,14 +54,14 @@ class Process(APIView):
                 base_image=File(open(path, 'rb')),
                 datetime=timezone.now()
             )
-            new_image.treatment() # Image processing
-            new_image.save() # Saves the model in the database
+            new_image.count_grap()  # Image processing
+            new_image.save()  # Saves the model in the database
 
-            os.remove(path) # Removes the temporary uploaded image file
+            os.remove(path)  # Removes the temporary uploaded image file
 
             return JsonResponse({'message': 'Image successfully processed !'}, status=200)
         except Exception as error:
-            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)            
+            return JsonResponse({'error': str(error), 'post': str(request.data)}, status=400)
 
 
 class Images(generics.ListAPIView):
@@ -76,7 +77,8 @@ class Images(generics.ListAPIView):
         from_id = self.request.query_params.get('from_id', None)
         if from_id is not None:
             # If from_id GET parameter, queries "query_limit" images from the given id
-            queryset = ImageModel.objects.filter(id__lt=from_id).order_by('-id')[:self.query_limit]
+            queryset = ImageModel.objects.filter(
+                id__lt=from_id).order_by('-id')[:self.query_limit]
         return queryset
 
 
@@ -93,6 +95,7 @@ class ImageFile(APIView):
     '''
     To get an image file
     '''
+
     def get(self, request, image_id, image):
         # Image model contains two images : base_image and processed_image
         if image == 'base' or image == 'processed':
@@ -103,7 +106,8 @@ class ImageFile(APIView):
                 path_to_file = os.path.join(settings.MEDIA_ROOT, file[image])
                 with open(path_to_file, 'rb') as image_file:
                     # Prepares the image file for HTTP request
-                    mime_type = mimetypes.MimeTypes().guess_type(file[image][0])
+                    mime_type = mimetypes.MimeTypes(
+                    ).guess_type(file[image][0])
                     response = HttpResponse(image_file, content_type=mime_type)
                     filename = file[image].split('/')[-1]
                     response['Content-Disposition'] = f'attachement; filename="{filename}"'
@@ -126,4 +130,4 @@ class ImageCountUpdate(APIView):
 
             return JsonResponse({'message': 'Image count successfully updated !'}, status=200)
         except Exception as error:
-            return JsonResponse({'error': str(error)}, status=400)  
+            return JsonResponse({'error': str(error)}, status=400)

@@ -26,12 +26,15 @@ class Image(models.Model):
         return 'images/{0}/{1}_processed{2}'.format(instance.datetime.date(), instance.datetime.time(), ext)
 
     # Database table properties for Image model
-    base_image = models.ImageField(max_length=255, upload_to=base_image_directory)
-    processed_image = models.ImageField(max_length=255, upload_to=processed_image_directory, blank=True)
+    base_image = models.ImageField(
+        max_length=255, upload_to=base_image_directory)
+    processed_image = models.ImageField(
+        max_length=255, upload_to=processed_image_directory, blank=True)
     datetime = models.DateTimeField(blank=True)
     count = models.PositiveIntegerField(blank=True)
 
     def pretreatement(self):
+        # Read image, filter it with otsu method and return original image and the new one
         pil_image = PIL.Image.open(self.base_image)
         img = np.array(pil_image)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -42,46 +45,37 @@ class Image(models.Model):
         return img, thresh
 
     def fill_hole(self, thresh):
+        # Fill holes in the images
         thresh = cv2.dilate(thresh, kernel,  iterations=2)
         thresh = cv2.erode(thresh, kernel,  iterations=2)
         return thresh
 
-    def work(self, thresh):
-        # noise removal
+    def process(self, thresh):
+        # Separate different forms
         kernel = np.ones((3, 3), np.uint8)
-        opening = cv2.morphologyEx(
-            thresh, cv2.MORPH_OPEN, kernel, iterations=2)
+        sure_bg = cv2.dilate(thresh, kernel, iterations=3)
 
-        # sure background area
-        sure_bg = cv2.dilate(opening, kernel, iterations=3)
-
-        # Finding sure foreground area
-        dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, 5)
+        dist_transform = cv2.distanceTransform(thresh, cv2.DIST_L2, 5)
         ret, sure_fg = cv2.threshold(
             dist_transform, DIST_TRANSFORM, 255, 0)
 
-        # Finding unknown region
         sure_fg = np.uint8(sure_fg)
         unknown = cv2.subtract(sure_bg, sure_fg)
 
         return sure_fg, unknown
 
     def draw_circle(self, sure_fg, unknown, img):
-        # Marker labelling
+        # Draw circle in the images
         ret, markers = cv2.connectedComponents(sure_fg)
-
-        # Add one to all labels so that sure background is not 0, but 1
         markers = markers+1
-
-        # Now, mark the region of unknown with zero
         markers[unknown == 255] = 0
-
         markers = cv2.watershed(img, markers)
         img[markers == -1] = [255, 0, 0]
 
         return img, ret
 
-    def treatment(self):
+    def count_grap(self):
+        # Count number of grap in the base_image and save processed_image with the grap surrounded
         img, thresh = self.pretreatement()
         thresh = self.fill_hole(thresh)
         sure_fg, unknown = self.work(thresh)
