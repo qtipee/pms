@@ -31,6 +31,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'pms_app',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
