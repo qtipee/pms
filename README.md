@@ -1,10 +1,12 @@
-# PMS Backend
+# PMS
 
-Backend Django application for [PMS Xamarin project](https://github.com/HE-Arc/PMS).
+To describe
 
-## Installation
+## Setup
 
-First, you need to add a file for your local settings in *pms/pms/settings/local_settings.py*. This file is ignored by Git and allows you to overwrite some configurations for you development environment :
+### Django
+
+First, you need to add a file for your local settings in *src/pms/settings/local_settings.py*. This file is ignored by Git and allows you to overwrite some configurations for you development environment :
 
 ```
 from pms.settings.common import *
@@ -33,7 +35,27 @@ pip install -r requirements.txt
 At last, apply the migrations and run the server :
 
 ```
-cd pms
+cd src
 python manage.py migrate
 python manage.py runserver
+```
+
+### Nuxt
+
+Go to the Nuxt project:
+
+```
+cd src/pms_nuxt
+```
+
+Once there, install the npm dependencies:
+
+```
+npm install
+```
+
+And then run the application
+
+```
+npm run dev
 ```
