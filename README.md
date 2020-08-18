@@ -54,7 +54,7 @@ Once there, install the npm dependencies:
 npm install
 ```
 
-And then run the application
+And then run the application:
 
 ```
 npm run dev
