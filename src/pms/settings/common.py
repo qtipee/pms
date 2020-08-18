@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'pms_app',
+    'pms_api',
     'django_extensions',
 ]
 
